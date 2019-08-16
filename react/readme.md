@@ -175,3 +175,117 @@ class Hello extends React.Component{
 ReactDom.render(<Hello data={data}/>, document.getElementById('app'))
 ```
 
+###### 事件。
+
+```react
+import React from 'react'
+import './commentItem.css'
+//css可以直接引入样式外联css
+//jsx内容作为组件
+//构造函数，接收外部传入数据
+const titleColor = {color: 'maroon'}
+
+//react事件绑定只能在元素内行内绑定，事件名称首字母必须大写
+//外部事件处理，事件对象：这个事件发生时，所有数据都放在事件对象里
+//点击的元素名称事件位置等等
+function aa (ev){
+    console.log(ev.target,ev.target.getAttribute('data-set'))
+}
+export default function commentItem(props) {
+
+    return (
+        <div>
+        <h1>评论列表</h1>
+        { props.obj.map(item =>{
+          return (<div key={item.id}>
+          {/* react 语法中行内样式要两个胡子括号外层代表jsx语法，内层表示对象 */}
+          <p><b style={ titleColor }>评论内容: </b>{ item.content }</p>
+          <p><b className="commentP">评论人: </b>{ item.user }</p>
+          <p><b>评论时间: </b>{ props.nowtime }</p>
+          <button onClick={ aa } data-set={item.user}>alert</button>
+          <button onClick={ function(){console.log(item.user)} }>111</button>
+          <hr/>
+          </div>
+          )
+        }) }
+        </div>
+    )
+}
+----------------
+class里面的this
+class App extends React.Component {
+    constructor (){
+        super()
+        this.state = {
+            name: 'haha',
+            age: 12,
+        }
+    }
+    funs(){
+        console.log('类部私有方法')
+        // 此时this指向该环境，即funs函数所在的环境,this指向的不是该组件的App与funs
+        // 所以想要拿到上一个环境的this 那么需要使用到箭头函数，才能拿到这个组件的数据
+        console.log(this.state)
+    }
+    funs2 = () =>{//使用箭头函数才能拿到app组件里面的state
+        console.log(this.state.name)
+    }
+    render() {
+        return (
+            <div>
+                {/* 在类组件中使用类内部的方法当作事件处理程序直接调用this */}
+                <button onClick={ this.funs2 }> this is a button </button>
+            </div>
+        )
+    }
+}
+
+
+```
+
+##### 双单向数据绑定
+
+```react
+import React from 'react'
+
+export default class App extends React.Component{
+    constructor(){
+        super()
+        this.state={
+            name: 'qy',
+            age: 22,
+        }
+    }
+    changeName = ()=> {
+        this.setState({
+            name: 'qingyi'//改变数据，this.setState({})传什么改什么，不传不该
+        })
+    }
+    changeAge = (ev) => {
+        this.setState({
+            age: ev.target.value
+        }) 
+    }
+    refDom = () => {
+        this.refs.input1.value = 'hhhhhhhhhhhhh'
+        this.setState({
+            age: this.refs.input1.value
+        })
+    }
+    render(){
+        return (
+            <div>
+                <h2>hello im { this.state.name }</h2>
+                <button onClick = { this.changeName }>改名</button>
+                {/* react中双向数据绑定只有通过onChange事件 */}
+                <input ref="input1" onChange = { this.changeAge } value = {this.state.age}/>
+                <input style={{background: '#fff',borderStyle: 'none',border: '1px solid gray',padding: '2px 4px'}} value = {this.state.age}/>
+                <h2>双向数据绑定 { this.state.age }</h2>
+                <button onClick = {this.refDom}>ref 操作</button>
+            </div>
+        )
+    }
+}
+
+```
+
